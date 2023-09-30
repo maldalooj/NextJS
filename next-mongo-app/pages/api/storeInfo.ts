@@ -67,9 +67,7 @@ class StoreInfoHandler {
   async getCountryNameByIp(ip: string): Promise<string> {
     try {
       const response: any = await fetch(`https://ipinfo.io/${ip}/json`);
-
-      const data = await response.country_name;
-      return data.country_name || "Unknown";
+      return response.country_name || "Unknown";
     } catch (error) {
       console.error("Error fetching country name:", error);
       return "Unknown";
