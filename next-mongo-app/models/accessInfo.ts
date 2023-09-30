@@ -10,7 +10,7 @@ const accessInfoSchema = new mongoose.Schema({
   timestamp: Date,
   mapLink: String,
 });
-let AccessInfo;
+let AccessInfo: typeof mongoose.Model;
 
 if (mongoose.models.AccessInfo) {
   AccessInfo = mongoose.model("AccessInfo");
