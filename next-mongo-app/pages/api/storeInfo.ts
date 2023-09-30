@@ -58,7 +58,8 @@ class StoreInfoHandler {
       const response: any = await fetch(
         `https://ipinfo.io/${ip}?token=${process.env.IP_API}`
       );
-      return response;
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error("Error fetching ip data:", error);
       return {};
