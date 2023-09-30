@@ -30,7 +30,7 @@ const List = () => {
       </Head>
       <main>
         <h1>User Access List</h1>
-        <Link href="/">Back to Home</Link>
+        {/* <Link href="/">Back to Home</Link> */}
         {userInfos.map((userInfo, index) => (
           <div key={index} className="user-info-card">
             <h2>Timestamp: {new Date(userInfo.timestamp).toLocaleString()}</h2>
