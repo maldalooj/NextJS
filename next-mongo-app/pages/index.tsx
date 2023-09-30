@@ -25,7 +25,7 @@ const Home: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ data, browserID }),
+          body: JSON.stringify({ ...data, browserID }),
         });
 
         if (!response.ok) {
@@ -43,15 +43,35 @@ const Home: React.FC = () => {
 
     // Try to get geolocation and send data if permission is granted
     if ("geolocation" in navigator) {
+      // navigator.geolocation.getCurrentPosition(
+      //   (position) => {
+      //     const { latitude, longitude } = position.coords;
+      //     sendData({
+      //       event: "geolocationGranted",
+      //       userAgent,
+      //       latitude,
+      //       longitude,
+      //     });
+      //   },
+      //   (error) => {
+      //     console.error("Geolocation Error:", error);
+      //   }
+      // );
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
+          const userAgent = navigator.userAgent;
           const { latitude, longitude } = position.coords;
-          sendData({
-            event: "geolocationGranted",
-            userAgent,
-            latitude,
-            longitude,
-          });
+
+          try {
+            sendData({
+              event: "geolocationGranted",
+              userAgent,
+              latitude,
+              longitude,
+            });
+          } catch (error) {
+            console.error("Error:", error);
+          }
         },
         (error) => {
           console.error("Geolocation Error:", error);
