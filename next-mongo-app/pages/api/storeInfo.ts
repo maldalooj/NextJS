@@ -37,7 +37,6 @@ class StoreInfoHandler {
         timestamp: new Date(),
         country,
       };
-      console.log(accessInfo);
 
       try {
         const dbconnection = await connectDB();
