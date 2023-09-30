@@ -1,12 +1,12 @@
 import Head from "next/head";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface UserInfo {
   timestamp: string;
   userAgent: string;
-  mapLink: string;
   country: string;
+  latitude?: number; // These properties are optional
+  longitude?: number; // These properties are optional
 }
 
 const List = () => {
@@ -23,6 +23,10 @@ const List = () => {
       });
   }, []);
 
+  function generateGoogleMapsLink(latitude: number, longitude: number): string {
+    return `https://www.google.com/maps?q=${latitude},${longitude}`;
+  }
+
   return (
     <>
       <Head>
@@ -30,22 +34,26 @@ const List = () => {
       </Head>
       <main>
         <h1>User Access List</h1>
-        {/* <Link href="/">Back to Home</Link> */}
         {userInfos.map((userInfo, index) => (
           <div key={index} className="user-info-card">
             <h2>Timestamp: {new Date(userInfo.timestamp).toLocaleString()}</h2>
             <p>User Agent: {userInfo.userAgent}</p>
             <p>Country: {userInfo.country}</p>
-            <p>
-              Location:{" "}
-              <a
-                href={userInfo.mapLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on Google Maps
-              </a>
-            </p>
+            {userInfo.latitude && userInfo.longitude && (
+              <p>
+                Location:{" "}
+                <a
+                  href={generateGoogleMapsLink(
+                    userInfo.latitude,
+                    userInfo.longitude
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on Google Maps
+                </a>
+              </p>
+            )}
           </div>
         ))}
         <style jsx>{`

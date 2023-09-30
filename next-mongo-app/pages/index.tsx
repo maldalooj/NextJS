@@ -8,30 +8,50 @@ const inter = Inter({ subsets: ["latin"] });
 
 const Home: React.FC = () => {
   useEffect(() => {
+    // Generate or retrieve a unique identifier for the browser or device
+    let browserID = localStorage.getItem("browserID");
+    if (!browserID) {
+      browserID = Math.random().toString(36).substr(2, 9); // This is a simple ID. Consider using a library like `uuid` for more robust IDs.
+      localStorage.setItem("browserID", browserID);
+    }
+
+    const userAgent = navigator.userAgent;
+
+    // Send data immediately upon page landing
+    const sendData = async (data: any) => {
+      try {
+        const response = await fetch("/api/storeInfo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data, browserID }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to store data");
+        }
+
+        const responseData = await response.json();
+        console.log(responseData);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+
+    sendData({ event: "pageLanding", userAgent });
+
+    // Try to get geolocation and send data if permission is granted
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const userAgent = navigator.userAgent;
+        (position) => {
           const { latitude, longitude } = position.coords;
-
-          try {
-            const response = await fetch("/api/storeInfo", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ userAgent, latitude, longitude }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to store data");
-            }
-
-            const data = await response.json();
-            console.log(data);
-          } catch (error) {
-            console.error("Error:", error);
-          }
+          sendData({
+            event: "geolocationGranted",
+            userAgent,
+            latitude,
+            longitude,
+          });
         },
         (error) => {
           console.error("Geolocation Error:", error);

@@ -1,14 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import AccessInfo from "../../models/accessInfo";
 import connectDB from "../../lib/mongodb";
+import { log } from "console";
 
 interface AccessInfo {
   ip: string;
+  browserID: string;
   userAgent: string;
   latitude: number;
   longitude: number;
   timestamp: Date;
-  mapLink: string;
   country: string;
 }
 
@@ -21,25 +22,31 @@ class StoreInfoHandler {
     if (req.method === "POST") {
       const ip =
         (req.headers["x-forwarded-for"] as string) ||
-        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
         "Unknown";
       const userAgent = req.headers["user-agent"] || "Unknown";
-      const { latitude, longitude } = req.body;
-      const country = await this.getCountryName(latitude, longitude);
+      const { latitude, longitude, browserID } = req.body;
+      const country = await this.getCountryNameByIp(ip);
 
       const accessInfo: AccessInfo = {
         ip,
+        browserID,
         userAgent,
         latitude,
         longitude,
-        mapLink: this.generateGoogleMapsLink(latitude, longitude),
         timestamp: new Date(),
         country,
       };
+      console.log(accessInfo);
 
       try {
         const dbconnection = await connectDB();
-        await AccessInfo.create(accessInfo);
+        // Update the document if browserID exists or create a new one if it doesn't
+        await AccessInfo.findOneAndUpdate(
+          { browserID: browserID }, // condition
+          accessInfo, // data to update or insert
+          { upsert: true } // options
+        );
         res.status(200).json({ message: "Data stored successfully" });
       } catch (error) {
         res.status(500).json({ error: "Failed to store data", err: error });
@@ -49,10 +56,7 @@ class StoreInfoHandler {
     }
   }
 
-  generateGoogleMapsLink(latitude: number, longitude: number): string {
-    return `https://www.google.com/maps?q=${latitude},${longitude}`;
-  }
-  getCountryName = async (lat: number, lng: number) => {
+  getCountryNameByLocation = async (lat: number, lng: number) => {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
     );
@@ -61,6 +65,19 @@ class StoreInfoHandler {
       ? data.address.country
       : "Unknown";
   };
+  async getCountryNameByIp(ip: string): Promise<string> {
+    try {
+      const response = await fetch(
+        `https://api.ipapi.com/api/${ip}?fields=country_name`
+      );
+      const data = await response.json();
+      return data.country_name || "Unknown";
+    } catch (error) {
+      console.error("Error fetching country name:", error);
+      return "Unknown";
+    }
+  }
+
   connectToDB() {}
 }
 
