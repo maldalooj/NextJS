@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import AccessInfo from "../../models/accessInfo";
 import connectDB from "../../lib/mongodb";
-import { log } from "console";
+import dotenv from "dotenv";
 
 interface AccessInfo {
   ip: string;
@@ -15,6 +15,7 @@ interface AccessInfo {
 
 class StoreInfoHandler {
   constructor() {
+    dotenv.config();
     this.handle = this.handle.bind(this); // Bind the handle method to the current instance
   }
 
@@ -66,8 +67,10 @@ class StoreInfoHandler {
   };
   async getCountryNameByIp(ip: string): Promise<string> {
     try {
-      const response: any = await fetch(`https://ipinfo.io/${ip}/json`);
-      return response.country_name || "Unknown";
+      const response: any = await fetch(
+        `ipinfo.io/${ip}?token=${process.env.IP_API}`
+      );
+      return response.country || "Unknown";
     } catch (error) {
       console.error("Error fetching country name:", error);
       return "Unknown";
