@@ -9,6 +9,7 @@ const accessInfoSchema = new mongoose.Schema({
   longitude: Number,
   timestamp: Date,
   mapLink: String,
+  country: String,
 });
 let AccessInfo: typeof mongoose.Model;
 

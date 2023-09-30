@@ -6,6 +6,7 @@ interface UserInfo {
   timestamp: string;
   userAgent: string;
   mapLink: string;
+  country: string;
 }
 
 const List = () => {
@@ -34,6 +35,7 @@ const List = () => {
           <div key={index} className="user-info-card">
             <h2>Timestamp: {new Date(userInfo.timestamp).toLocaleString()}</h2>
             <p>User Agent: {userInfo.userAgent}</p>
+            <p>Country: {userInfo.country}</p>
             <p>
               Location:{" "}
               <a

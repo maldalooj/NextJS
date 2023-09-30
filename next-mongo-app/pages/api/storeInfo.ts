@@ -9,6 +9,7 @@ interface AccessInfo {
   longitude: number;
   timestamp: Date;
   mapLink: string;
+  country: string;
 }
 
 class StoreInfoHandler {
@@ -24,6 +25,7 @@ class StoreInfoHandler {
         "Unknown";
       const userAgent = req.headers["user-agent"] || "Unknown";
       const { latitude, longitude } = req.body;
+      const country = await this.getCountryName(latitude, longitude);
 
       const accessInfo: AccessInfo = {
         ip,
@@ -32,6 +34,7 @@ class StoreInfoHandler {
         longitude,
         mapLink: this.generateGoogleMapsLink(latitude, longitude),
         timestamp: new Date(),
+        country,
       };
 
       try {
@@ -49,6 +52,15 @@ class StoreInfoHandler {
   generateGoogleMapsLink(latitude: number, longitude: number): string {
     return `https://www.google.com/maps?q=${latitude},${longitude}`;
   }
+  getCountryName = async (lat: number, lng: number) => {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+    const data = await response.json();
+    return data.address && data.address.country
+      ? data.address.country
+      : "Unknown";
+  };
   connectToDB() {}
 }
 
