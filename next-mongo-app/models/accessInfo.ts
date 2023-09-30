@@ -2,7 +2,7 @@ import { Schema, Model, models, model } from "mongoose";
 
 // import mongoose from "mongoose";
 
-const userInfoSchema = new Schema({
+const accessInfoSchema = new Schema({
   ip: String,
   userAgent: String,
   latitude: Number,
@@ -10,5 +10,6 @@ const userInfoSchema = new Schema({
   timestamp: Date,
   mapLink: String,
 });
-const UserInfo = models.UserInfo || model("UserInfo", userInfoSchema);
-export default UserInfo;
+const AccessInfo =
+  models.AccessInfo || model("accessInfo", accessInfoSchema, "access_info");
+export default AccessInfo;

@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import UserInfo from "../../models/userInfo";
+import AccessInfo from "../../models/accessInfo";
 import connectDB from "../../lib/mongodb";
 
-interface UserInfo {
+interface AccessInfo {
   ip: string;
   userAgent: string;
   latitude: number;
@@ -25,7 +25,7 @@ class StoreInfoHandler {
       const userAgent = req.headers["user-agent"] || "Unknown";
       const { latitude, longitude } = req.body;
 
-      const userInfo: UserInfo = {
+      const accessInfo: AccessInfo = {
         ip,
         userAgent,
         latitude,
@@ -36,7 +36,7 @@ class StoreInfoHandler {
 
       try {
         const dbconnection = await connectDB();
-        await UserInfo.create(userInfo);
+        await AccessInfo.create(accessInfo);
         res.status(200).json({ message: "Data stored successfully" });
       } catch (error) {
         res.status(500).json({ error: "Failed to store data", err: error });
