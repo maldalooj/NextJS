@@ -1,8 +1,8 @@
-import { Schema, Model, models, model } from "mongoose";
+// import { Schema, Model, models, model } from "mongoose";
 
-// import mongoose from "mongoose";
+import mongoose from "mongoose";
 
-const accessInfoSchema = new Schema({
+const accessInfoSchema = new mongoose.Schema({
   ip: String,
   userAgent: String,
   latitude: Number,
@@ -10,6 +10,7 @@ const accessInfoSchema = new Schema({
   timestamp: Date,
   mapLink: String,
 });
-const AccessInfo =
-  models.AccessInfo || model("accessInfo", accessInfoSchema, "access_info");
+let AccessInfo =
+  mongoose.models.AccessInfo ||
+  mongoose.model("accessInfo", accessInfoSchema, "access_info");
 export default AccessInfo;
