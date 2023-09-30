@@ -3,13 +3,12 @@
 import mongoose from "mongoose";
 
 const accessInfoSchema = new mongoose.Schema({
-  ip: String,
+  ipinfo: Object,
   browserID: String,
   userAgent: String,
   latitude: Number,
   longitude: Number,
   timestamp: Date,
-  country: String,
 });
 let AccessInfo: typeof mongoose.Model;
 

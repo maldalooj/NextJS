@@ -4,13 +4,12 @@ import connectDB from "../../lib/mongodb";
 import dotenv from "dotenv";
 
 interface AccessInfo {
-  ip: string;
+  ipinfo: object;
   browserID: string;
   userAgent: string;
   latitude: number;
   longitude: number;
   timestamp: Date;
-  country: string;
 }
 
 class StoreInfoHandler {
@@ -27,16 +26,15 @@ class StoreInfoHandler {
         "Unknown";
       const userAgent = req.headers["user-agent"] || "Unknown";
       const { latitude, longitude, browserID } = req.body;
-      const country = await this.getCountryNameByIp(ip);
+      const ipinfo = await this.getIpInfo(ip);
 
       const accessInfo: AccessInfo = {
-        ip,
+        ipinfo,
         browserID,
         userAgent,
         latitude,
         longitude,
         timestamp: new Date(),
-        country,
       };
 
       try {
@@ -55,26 +53,15 @@ class StoreInfoHandler {
       res.status(405).json({ error: "Method not allowed" });
     }
   }
-
-  getCountryNameByLocation = async (lat: number, lng: number) => {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-    );
-    const data = await response.json();
-    return data.address && data.address.country
-      ? data.address.country
-      : "Unknown";
-  };
-  async getCountryNameByIp(ip: string): Promise<string> {
+  async getIpInfo(ip: string): Promise<object> {
     try {
       const response: any = await fetch(
         `https://ipinfo.io/${ip}?token=${process.env.IP_API}`
       );
-
-      return response.country || "Unknown";
+      return response;
     } catch (error) {
-      console.error("Error fetching country name:", error);
-      return "Unknown";
+      console.error("Error fetching ip data:", error);
+      return {};
     }
   }
 
