@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import client from "../../lib/mongodb";
+import UserInfo from "../../lib/userInfo";
 
 interface UserInfo {
   ip: string;
@@ -34,11 +34,7 @@ class StoreInfoHandler {
       };
 
       try {
-        await client.connect();
-        const db = client.db("tracker"); // Replace with your database name if different
-        const collection = db.collection("userInfo");
-        await collection.insertOne(userInfo);
-        await client.close();
+        await UserInfo.create(userInfo);
         res.status(200).json({ message: "Data stored successfully" });
       } catch (error) {
         res.status(500).json({ error: "Failed to store data", err: error });
