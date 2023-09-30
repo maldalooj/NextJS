@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 interface UserInfo {
   timestamp: string;
   userAgent: string;
-  // country: string;
   latitude?: number; // These properties are optional
   longitude?: number; // These properties are optional
+  ipinfo: {
+    city?: string;
+    region?: string;
+    country?: string;
+  };
 }
 
 const List = () => {
@@ -38,10 +42,13 @@ const List = () => {
           <div key={index} className="user-info-card">
             <h2>Timestamp: {new Date(userInfo.timestamp).toLocaleString()}</h2>
             <p>User Agent: {userInfo.userAgent}</p>
-            {/* <p>Country: {userInfo.country}</p> */}
+            <p>
+              IP location: {userInfo.ipinfo.city} , {userInfo.ipinfo.region} ,{" "}
+              {userInfo.ipinfo.country}
+            </p>
             {userInfo.latitude && userInfo.longitude && (
               <p>
-                Location:{" "}
+                exact location:{" "}
                 <a
                   href={generateGoogleMapsLink(
                     userInfo.latitude,
