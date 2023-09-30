@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import UserInfo from "../../lib/userInfo";
+import UserInfo from "../../models/userInfo";
+import connectDB from "../../lib/mongodb";
 
 interface UserInfo {
   ip: string;
@@ -34,6 +35,7 @@ class StoreInfoHandler {
       };
 
       try {
+        const dbconnection = await connectDB();
         await UserInfo.create(userInfo);
         res.status(200).json({ message: "Data stored successfully" });
       } catch (error) {
@@ -47,6 +49,7 @@ class StoreInfoHandler {
   generateGoogleMapsLink(latitude: number, longitude: number): string {
     return `https://www.google.com/maps?q=${latitude},${longitude}`;
   }
+  connectToDB() {}
 }
 
 const handler = new StoreInfoHandler();
